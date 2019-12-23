@@ -1,6 +1,6 @@
 var $,tab,dataStr,layer;
 layui.config({
-	base : "js/"
+	base : "/resources/js/"
 }).extend({
 	"bodyTab" : "bodyTab"
 })
@@ -11,13 +11,13 @@ layui.use(['bodyTab','form','element','layer','jquery'],function(){
     	layer = parent.layer === undefined ? layui.layer : top.layer;
 		tab = layui.bodyTab({
 			openTabNum : "50",  //最大可打开窗口数量
-			url : "json/navs2.json" //获取菜单json地址
+			url : "/menu/loadIndexLeftMenuJson" //获取菜单json地址
 		});
 
 	//通过顶部菜单获取左侧二三级菜单   注：此处只做演示之用，实际开发中通过接口传参的方式获取导航数据
 	function getData(json){
 		$.getJSON(tab.tabConfig.url,function(data){
-				dataStr = data;
+				dataStr = data.data;
 				//重新渲染左侧菜单
 				tab.render();
 		})
