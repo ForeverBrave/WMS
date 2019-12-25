@@ -43,6 +43,7 @@ public class LoginfoController {
         wrapper.like(StringUtils.isNotBlank(loginfoVo.getLoginip()),"loginip",loginfoVo.getLoginip());
         wrapper.ge(loginfoVo.getStartTime()!=null,"logintime",loginfoVo.getStartTime());
         wrapper.le(loginfoVo.getEndTime()!=null,"logintime",loginfoVo.getEndTime());
+        wrapper.orderByDesc("logintime");
         this.loginfoService.pageMaps(page,wrapper);
 
         return new DataGridView(page.getTotal(),page.getRecords());
