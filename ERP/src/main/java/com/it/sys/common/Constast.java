@@ -11,8 +11,7 @@ public class Constast {
      * 状态码
      */
     public static final Integer OK = 200;
-    public static final Integer ERROR_PASS = -1;
-    public static final Integer ERROR_CODE = -2;
+    public static final Integer ERROR = -1;
 
     /**
      * 菜单权限类型

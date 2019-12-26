@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.it.sys.common.DataGridView;
+import com.it.sys.common.ResultObj;
 import com.it.sys.domain.Loginfo;
 import com.it.sys.service.LoginfoService;
 import com.it.sys.vo.LoginfoVo;
@@ -14,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * <p>
@@ -49,5 +54,39 @@ public class LoginfoController {
         return new DataGridView(page.getTotal(),page.getRecords());
     }
 
+    /**
+     * 按id删除
+     * @return
+     */
+    @RequestMapping("deleteLoginfo")
+    public ResultObj deleteLoginfo(Integer id){
+        try {
+            this.loginfoService.removeById(id);
+            return ResultObj.DELETE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DELETE_ERROR;
+        }
+    }
+
+    /**
+     * 批量删除
+     * @return id
+     */
+    @RequestMapping("batchDeleteLoginfo")
+    public ResultObj batchDeleteLoginfo(LoginfoVo loginfoVo){
+        try {
+
+            Collection<Serializable> idList = new ArrayList<Serializable>();
+            for (Integer id : loginfoVo.getIds()) {
+                idList.add(id);
+            }
+            this.loginfoService.removeByIds(idList);
+            return ResultObj.DELETE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DELETE_ERROR;
+        }
+    }
 }
 
