@@ -1,7 +1,7 @@
 package com.it.sys.vo;
 
 import com.it.sys.domain.Loginfo;
-import com.it.sys.domain.Permission;
+import com.it.sys.domain.Notice;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class LoginfoVo extends Loginfo {
+public class NoticeVo extends Notice {
 
     private static final long serialVersionUID = 1L;
 
