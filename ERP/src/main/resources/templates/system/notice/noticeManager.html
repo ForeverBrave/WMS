@@ -75,15 +75,56 @@
 
 <!-- 数据表格结束 -->
 
+<!-- 添加和修改的弹出层开始 -->
+<div style="display: none;padding: 5px" id="addOrUpdateDiv">
+    <form action="" method="post" class="layui-form layui-form-pane" id="dataFrm" lay-filter="dataFrm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">公告标题</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="id">
+                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">公告内容</label>
+            <div class="layui-input-block">
+                <textarea class="layui-textarea" name="content" id="content"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" style="text-align: center;">
+                <button type="button" class="layui-btn" lay-submit="" id="doSubmit" ><span class="layui-icon layui-icon-add-1"></span>提交</button>
+                <button type="reset" class="layui-btn layui-btn-warm"><span class="layui-icon layui-icon-refresh-1"></span>重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 添加和修改的弹出层结束 -->
+
+<!-- 查看弹出层的开始 -->
+<div style="display: none;padding: 5px" id="showNoticeDiv">
+    <h2 id="show_title" align="center"></h2>
+    <div style="text-align: right;">
+        发布人:<span id="show_opername"></span>
+        发布时间:<span id="show_createtime"></span>
+    </div>
+    <hr>
+    <div id="show_content"></div>
+
+</div>
+<!-- 查看弹出层的结束-->
+
+
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 
 <script type="text/javascript">
-    layui.use(['jquery','form','table','layer','laydate'],function(){
+    layui.use(['jquery','form','table','layer','laydate','layedit'],function(){
         var $=layui.jquery;
         var form=layui.form;
         var table=layui.table;
         var layer=layui.layer;
         var laydate=layui.laydate;
+        var layedit=layui.layedit;
         //初始化时间选择器
         laydate.render({
             elem:'#startTime',
@@ -94,7 +135,10 @@
             type:'datetime'
         });
 
-        //加载 数据
+        //初始化富文本
+        var editIndex = layedit.build('content');
+
+        //加载数据
         var tableIns=table.render({
             elem: '#noticeTable'
             ,url:'/notice/loadAllNotice'
@@ -130,7 +174,7 @@
                     batchDelete();
                     break;
                 case 'add':
-                    add();
+                    openAddLayer();
                     break;
             };
         });
@@ -150,6 +194,34 @@
                     break;
             };
         });
+
+
+        var mainIndex;
+        var url;
+        //打开添加的弹出层
+        function openAddLayer(){
+            mainIndex=layer.open({
+                type:1,
+                content:$("#addOrUpdateDiv"),
+                area:['600px','400px'],
+                title:'发布公告',
+                success:function () {
+                    url="/notice/addNotice";
+                }
+            });
+        }
+
+        //添加和修改的提交
+        form.on("submit(doSubmit)",function (data) {
+            $.post(url,data.field,function (res) {
+                if(res.code==200){
+                    tableIns.reload();
+                }
+                layer.msg(res.msg);
+            })
+            return false;
+        });
+
 
         //删除
         function deleteInfo(data){

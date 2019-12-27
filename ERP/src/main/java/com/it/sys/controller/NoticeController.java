@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.it.sys.common.DataGridView;
+import com.it.sys.common.ResultObj;
+import com.it.sys.common.WebUtils;
 import com.it.sys.domain.Notice;
+import com.it.sys.domain.User;
 import com.it.sys.service.NoticeService;
 import com.it.sys.vo.NoticeVo;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -23,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2019-12-27
  */
 @RestController
-@RequestMapping("/sys/notice")
+@RequestMapping("/notice")
 public class NoticeController {
 
     @Autowired
@@ -46,6 +51,26 @@ public class NoticeController {
         wrapper.orderByDesc("createtime");
         this.noticeService.page(noticePage,wrapper);
         return new DataGridView(noticePage.getTotal(),noticePage.getRecords());
+    }
+
+    /**
+     * 添加
+     * @param noticeVo
+     * @return
+     */
+    @RequestMapping("addNotice")
+    public ResultObj addNotice(NoticeVo noticeVo){
+        try {
+            noticeVo.setCreatetime(new Date());
+            User user = (User) WebUtils.getSession().getAttribute("user");
+            noticeVo.setOpername(user.getName());
+            this.noticeService.saveOrUpdate(noticeVo);
+            return ResultObj.ADD_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.ADD_ERROR;
+        }
+
     }
 
 }
