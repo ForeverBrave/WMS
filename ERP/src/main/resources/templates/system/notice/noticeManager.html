@@ -93,7 +93,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block" style="text-align: center;">
-                <button type="button" class="layui-btn" lay-submit="" id="doSubmit" ><span class="layui-icon layui-icon-add-1"></span>提交</button>
+                <button type="button" class="layui-btn" lay-submit="" id="doSubmit"><span class="layui-icon layui-icon-add-1"></span>提交</button>
                 <button type="reset" class="layui-btn layui-btn-warm"><span class="layui-icon layui-icon-refresh-1"></span>重置</button>
             </div>
         </div>
@@ -184,13 +184,13 @@
             var data = obj.data; //获得当前行数据
             switch(obj.event){
                 case 'update':
-                    deleteInfo(data);
+                    openUpdateNoticeLayer(data);
                     break;
                 case 'delete':
-                    deleteInfo(data);
+                    deleteNotice(data);
                     break;
                 case 'show':
-                    deleteInfo(data);
+                    showNotice(data);
                     break;
             };
         });
@@ -206,27 +206,48 @@
                 area:['600px','400px'],
                 title:'发布公告',
                 success:function () {
+                    $("#dataFrm")[0].reset();
+                    layedit.setContent(editIndex,"");
                     url="/notice/addNotice";
                 }
             });
         }
 
+        //打开修改的弹出层
+        function openUpdateNoticeLayer(data){
+            mainIndex=layer.open({
+                type:1,
+                content:$("#addOrUpdateDiv"),
+                area:['600px','400px'],
+                title:'修改公告',
+                success:function () {
+                    $("#dataFrm")[0].reset();
+                    //装载新的数据
+                    form.val("dataFrm",data);
+                    layedit.setContent(editIndex,data.content);
+                    url="/notice/updateNotice";
+                }
+            });
+        }
+
         //添加和修改的提交
-        form.on("submit(doSubmit)",function (data) {
-            $.post(url,data.field,function (res) {
+        $("#doSubmit").click(function () {
+            //同步富文本和textarea里面的内容
+            layedit.sync(editIndex);
+            var data = $("#dataFrm").serialize();
+            $.post(url,data,function (res) {
                 if(res.code==200){
                     tableIns.reload();
                 }
                 layer.msg(res.msg);
+                layer.close(mainIndex);
             })
-            return false;
         });
 
-
         //删除
-        function deleteInfo(data){
-            layer.confirm('你确定要删除这条数据吗?', {icon: 3, title:'提示'}, function(index){
-                $.post("/notice/deletenotice",{id:data.id},function(res){
+        function deleteNotice(data){
+            layer.confirm('你确定要删除【'+data.title+'】这条公告吗?', {icon: 3, title:'提示'}, function(index){
+                $.post("/notice/deleteNotice",{id:data.id},function(res){
                     if(res.code==200){
                         tableIns.reload();
                     }
@@ -242,7 +263,7 @@
             var checkStatus = table.checkStatus('noticeTable');
             var dataLength=checkStatus.data.length;
             if(dataLength>0){
-                layer.confirm('你确定要删除这些数据吗?', {icon: 3, title:'提示'}, function(index){
+                layer.confirm('你确定要删除这些公告吗?', {icon: 3, title:'提示'}, function(index){
                     var data=checkStatus.data; //获取选中行的数据
                     var ids="";
                     $.each(data,function(index,item){
@@ -252,7 +273,7 @@
                             ids+="&ids="+item.id;
                         }
                     })
-                    $.post("/notice/batchDeletenotice",ids,function(res){
+                    $.post("/notice/batchDeleteNotice",ids,function(res){
                         if(res.code==200){
                             tableIns.reload();
                         }

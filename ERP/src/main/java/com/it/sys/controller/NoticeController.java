@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -64,14 +67,62 @@ public class NoticeController {
             noticeVo.setCreatetime(new Date());
             User user = (User) WebUtils.getSession().getAttribute("user");
             noticeVo.setOpername(user.getName());
-            this.noticeService.saveOrUpdate(noticeVo);
+            this.noticeService.save(noticeVo);
             return ResultObj.ADD_SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultObj.ADD_ERROR;
         }
-
     }
 
+    /**
+     * 更新
+     * @param noticeVo
+     * @return
+     */
+    @RequestMapping("updateNotice")
+    public ResultObj updateNotice(NoticeVo noticeVo){
+        try {
+            this.noticeService.updateById(noticeVo);
+            return ResultObj.UPDATE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.UPDATE_ERROR;
+        }
+    }
+
+    /**
+     * 按id删除
+     * @return
+     */
+    @RequestMapping("deleteNotice")
+    public ResultObj deleteNotice(Integer id){
+        try {
+            this.noticeService.removeById(id);
+            return ResultObj.DELETE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DELETE_ERROR;
+        }
+    }
+
+    /**
+     * 批量删除
+     * @return id
+     */
+    @RequestMapping("batchDeleteNotice")
+    public ResultObj batchDeleteNotice(NoticeVo noticeVo){
+        try {
+            Collection<Serializable> idList = new ArrayList<Serializable>();
+            for (Integer id : noticeVo.getIds()) {
+                idList.add(id);
+            }
+            this.noticeService.removeByIds(idList);
+            return ResultObj.DELETE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DELETE_ERROR;
+        }
+    }
 }
 
