@@ -73,7 +73,7 @@ public class DeptController {
      */
     @RequestMapping("loadDeptMaxOrderNum")
     public Map<String,Object> loadDeptMaxOrderNum(){
-        HashMap<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         QueryWrapper<Dept> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("ordernum");
         List<Dept> depts = this.deptService.list(wrapper);

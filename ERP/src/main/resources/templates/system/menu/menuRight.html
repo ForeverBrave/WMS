@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>部门管理-右边列表</title>
+    <title>菜单管理-右边列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -25,30 +25,17 @@
     <form action="" method="post" id="searchFrm" lay-filter="searchFrm" class="layui-form layui-form-pane">
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">部门名称</label>
+                <label class="layui-form-label">菜单名称</label>
                 <div class="layui-input-inline">
                     <input type="text" name="title"  autocomplete="off" class="layui-input">
                 </div>
-            </div>
-            <div class="layui-inline">
-                <label class="layui-form-label">部门地址</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="address"    autocomplete="off" class="layui-input">
-                </div>
-            </div>
-            <div class="layui-inline">
-                <label class="layui-form-label">部门备注</label>
-                <div class="layui-input-inline">
-                    <input type="text" name="remark"    autocomplete="off" class="layui-input">
+                    <button type="button" class="layui-btn" lay-submit="" lay-filter="doSearch"><span class="layui-icon layui-icon-search"></span>查询</button>
+                    <button type="reset" class="layui-btn layui-btn-warm"><span class="layui-icon layui-icon-refresh-1"></span>重置</button>
                 </div>
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block" style="text-align: center;">
-                <button type="button" class="layui-btn" lay-submit="" lay-filter="doSearch"><span class="layui-icon layui-icon-search"></span>查询</button>
-                <button type="reset" class="layui-btn layui-btn-warm"><span class="layui-icon layui-icon-refresh-1"></span>重置</button>
-            </div>
-        </div>
+
     </form>
 </blockquote>
 <!-- 查询条件结束-->
@@ -56,12 +43,12 @@
 
 <!-- 数据表格开始 -->
 <div>
-    <table class="layui-hide" id="deptTable" lay-filter="deptTable"></table>
-    <div id="deptToolBar" style="display: none;">
-        <button type="button" lay-event="add" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-add-1"></span>添加部门</button>
+    <table class="layui-hide" id="menuTable" lay-filter="menuTable"></table>
+    <div id="menuToolBar" style="display: none;">
+        <button type="button" lay-event="add" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-add-1"></span>添加菜单</button>
     </div>
 
-    <div id="deptRowBar" style="display: none;">
+    <div id="menuRowBar" style="display: none;">
         <button type="button" lay-event="update" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-edit"></span>更新</button>
         <button type="button" lay-event="delete" class="layui-btn layui-btn-sm layui-btn-danger"><span class="layui-icon layui-icon-delete"></span>删除</button>
     </div>
@@ -73,30 +60,38 @@
 <div style="display: none;padding: 5px" id="addOrUpdateDiv">
     <form action="" method="post" class="layui-form layui-form-pane" id="dataFrm" lay-filter="dataFrm">
         <div class="layui-form-item">
-            <label class="layui-form-label">父级部门</label>
+            <label class="layui-form-label">父级菜单</label>
             <div class="layui-input-block">
                 <input type="hidden" name="pid" id="pid">
                 <!-- 存放树的容器 -->
-                <ul id="deptTree" class="dtree" data-id="0"></ul>
+                <ul id="menuTree" class="dtree" data-id="0"></ul>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">部门名称</label>
+            <label class="layui-form-label">菜单名称</label>
             <div class="layui-input-block">
                 <input type="hidden" name="id">
-                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" class="layui-input">
+                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入菜单名称" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">部门地址</label>
+            <label class="layui-form-label">菜单地址</label>
             <div class="layui-input-block">
-                <input type="text" name="address" lay-verify="required" autocomplete="off" placeholder="请输入部门地址" class="layui-input">
+                <input type="text" name="href" autocomplete="off" placeholder="请输入菜单地址" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">部门备注</label>
-            <div class="layui-input-block">
-                <textarea class="layui-textarea" name="remark" id="content"></textarea>
+            <div class="layui-inline">
+                <label class="layui-form-label">菜单图标</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="icon" autocomplete="off" placeholder="请输入菜单图标" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">TARGET</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="target" autocomplete="off" placeholder="请输入菜单TARGET" class="layui-input">
+                </div>
             </div>
         </div>
         <div class="layui-form-item">
@@ -145,18 +140,20 @@
         var dtree=layui.dtree;
         //加载数据
         tableIns=table.render({
-            elem: '#deptTable'
-            ,url:'/dept/loadAllDept'
-            ,toolbar: '#deptToolBar' //开启头部工具栏，并为其绑定左侧模板
-            ,title: '部门数据表'
-            ,height:'full-250'
+            elem: '#menuTable'
+            ,url:'/menu/loadAllMenu'
+            ,toolbar: '#menuToolBar' //开启头部工具栏，并为其绑定左侧模板
+            ,title: '菜单数据表'
+            ,height:'full-220'
             ,page: true
             ,cols: [ [
                 {field:'id', title:'ID',align:'center',width:'80'}
-                ,{field:'pid', title:'父级部门ID',align:'center',width:'100'}
-                ,{field:'title', title:'部门名称',align:'center',width:'150'}
-                ,{field:'address', title:'部门地址',align:'center',width:'150'}
-                ,{field:'remark', title:'部门备注',align:'center',width:'180'}
+                ,{field:'pid', title:'父级菜单ID',align:'center',width:'100'}
+                ,{field:'title', title:'菜单名称',align:'center',width:'150'}
+                ,{field:'href', title:'菜单地址',align:'center',width:'150'}
+                ,{field:'icon', title:'菜单图标',align:'center',width:'100',templet:function (d) {
+                        return '<font class="layui-icon">'+d.icon+'</font>';
+                    }}
                 ,{field:'open', title:'是否展开',align:'center',width:'100',templet:function (d) {
                         return d.open==1?'<font color="blue">展开</font>':'<font color="red">不展开</font>';
                     }}
@@ -164,8 +161,8 @@
                             return d.available==1?'<font color="blue">可用</font>':'<font color="red">不可用</font>';
                     }}
                 ,{field:'ordernum', title:'排序码',align:'center',width:'100'}
-                ,{field:'createtime', title:'创建时间',align:'center',width:'200'}
-                ,{fixed: 'right', title:'操作', toolbar: '#deptRowBar',align:'center',width:'200'}
+                ,{field:'target', title:'TARGET',align:'center',width:'100',hide:true}
+                ,{fixed: 'right', title:'操作', toolbar: '#menuRowBar',align:'center',width:'200'}
             ] ]
         });
 
@@ -181,7 +178,7 @@
         });
 
         //监听工具条的事件
-        table.on("toolbar(deptTable)",function(obj){
+        table.on("toolbar(menuTable)",function(obj){
             switch(obj.event){
                 case 'add':
                     openAddLayer();
@@ -190,14 +187,14 @@
         });
 
         //监听行工具条的事件
-        table.on("tool(deptTable)",function(obj){
+        table.on("tool(menuTable)",function(obj){
             var data = obj.data; //获得当前行数据
             switch(obj.event){
                 case 'update':
-                    openUpdateDeptLayer(data);
+                    openUpdateMenuLayer(data);
                     break;
                 case 'delete':
-                    deleteDept(data);
+                    deleteMenu(data);
                     break;
             };
         });
@@ -211,12 +208,12 @@
                 type:1,
                 content:$("#addOrUpdateDiv"),
                 area:['600px','400px'],
-                title:'添加部门',
+                title:'添加菜单',
                 success:function () {
                     $("#dataFrm")[0].reset();
-                    url="/dept/addDept";
+                    url="/menu/addMenu";
                     //初始化排序码(把后台查询的最后排序码传到前台)
-                    $.get("/dept/loadDeptMaxOrderNum",function (res) {
+                    $.get("/menu/loadMenuMaxOrderNum",function (res) {
                         $("#ordernum").val(res.value);
                     })
                 }
@@ -224,21 +221,21 @@
         }
 
         //打开修改的弹出层
-        function openUpdateDeptLayer(data){
+        function openUpdateMenuLayer(data){
             mainIndex=layer.open({
                 type:1,
                 content:$("#addOrUpdateDiv"),
                 area:['600px','400px'],
-                title:'修改部门',
+                title:'修改菜单',
                 success:function () {
                     $("#dataFrm")[0].reset();
                     //装载新的数据
                     form.val("dataFrm",data);
-                    //选中之前父级部门 nodeId=data.pid
-                    dtree.dataInit("deptTree",data.pid);
-                    // dtree.setSelectValue("deptTree");
-                    dtree.selectVal("deptTree");
-                    url="/dept/updateDept";
+                    //选中之前父级菜单 nodeId=data.pid
+                    dtree.dataInit("menuTree",data.pid);
+                    // dtree.setSelectValue("menuTree");
+                    dtree.selectVal("menuTree");
+                    url="/menu/updateMenu";
                 }
             });
         }
@@ -251,8 +248,8 @@
                     tableIns.reload();
                     //刷新下拉树
                     selectTree.reload();
-                    //刷新左边的部门树
-                    window.parent.left.deptTree.reload();
+                    //刷新左边的菜单树
+                    window.parent.left.menuTree.reload();
                 }
                 layer.msg(res.msg);
                 layer.close(mainIndex);
@@ -260,19 +257,19 @@
         });
 
         //删除
-        function deleteDept(data){
-            $.post("/dept/checkDeptHasChildrenNode",{id:data.id},function (result) {
+        function deleteMenu(data){
+            $.post("/menu/checkMenuHasChildrenNode",{id:data.id},function (result) {
                 if(result.value){
-                    layer.msg("当前部门下存在子部门，请先删除子部门");
+                    layer.msg("当前菜单下存在子菜单，请先删除子菜单");
                 }else {
-                    layer.confirm('你确定要删除【'+data.title+'】这条部门吗?', {icon: 3, title:'提示'}, function(index){
-                        $.post("/dept/deleteDept",{id:data.id},function(res){
+                    layer.confirm('你确定要删除【'+data.title+'】这条菜单吗?', {icon: 3, title:'提示'}, function(index){
+                        $.post("/menu/deleteMenu",{id:data.id},function(res){
                             if(res.code==200){
                                 tableIns.reload();
                                 //刷新下拉树
                                 selectTree.reload();
-                                //刷新左边的部门树
-                                window.parent.left.deptTree.reload();
+                                //刷新左边的菜单树
+                                window.parent.left.menuTree.reload();
                             }
                             layer.msg(res.msg);
                         })
@@ -284,15 +281,15 @@
 
         //初始化下拉树
         var selectTree=dtree.renderSelect({
-           elem: "#deptTree",
+           elem: "#menuTree",
            width: "100%",  //可以在这里指定树的宽度来填满div
            dataStyle: "layuiStyle",   //使用layui风格的数据格式
            dataFormat: "list",  //配置data风格为list
            response:{message:"msg",statusCode:0},  //修改resources中返回数据的定义
-           url: "/dept/loadDeptManagerLeftTreeJson"   //使用url加载（可与data加载同时纯在）
+           url: "/menu/loadMenuManagerLeftTreeJson"   //使用url加载（可与data加载同时纯在）
         });
         //监听点击方法
-        dtree.on("node(deptTree)",function (obj) {
+        dtree.on("node(menuTree)",function (obj) {
             //将节点里的值赋值给 pid
             $("#pid").val(obj.param.nodeId);
         })
