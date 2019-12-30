@@ -1,2 +1,2 @@
-# WMS
-集成了springboot+layui+mybatisplus+shiro的仓库管理系统  
+# WM
+集成了springboot+layui+mybatisplus+shiro仓库管理系统  
