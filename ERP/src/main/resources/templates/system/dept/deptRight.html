@@ -167,6 +167,15 @@
                 ,{field:'createtime', title:'创建时间',align:'center',width:'200'}
                 ,{fixed: 'right', title:'操作', toolbar: '#deptRowBar',align:'center',width:'200'}
             ] ]
+            ,done:function (res,curr,count) {  //处理删除某一页最后一条数据的BUG
+                if(res.data.length==0&&curr!=1){
+                    tableIns.reload({
+                        page:{
+                            curr:(curr-1)
+                        }
+                    })
+                }
+            }
         });
 
         //模糊查询

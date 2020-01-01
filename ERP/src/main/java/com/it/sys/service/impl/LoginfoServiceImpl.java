@@ -5,6 +5,7 @@ import com.it.sys.mapper.LoginfoMapper;
 import com.it.sys.service.LoginfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @since 2019-12-24
  */
 @Service
+@Transactional
 public class LoginfoServiceImpl extends ServiceImpl<LoginfoMapper, Loginfo> implements LoginfoService {
 
 }

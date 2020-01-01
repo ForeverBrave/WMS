@@ -62,7 +62,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">父级菜单</label>
             <div class="layui-input-block">
-                <input type="hidden" name="pid" id="pid">
+                <input type="hidden" name="pid" id="pid" lay-verify="required">
                 <!-- 存放树的容器 -->
                 <ul id="menuTree" class="dtree" data-id="0"></ul>
             </div>
@@ -118,7 +118,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block" style="text-align: center;">
-                <button type="button" class="layui-btn" lay-submit="" id="doSubmit"><span class="layui-icon layui-icon-add-1"></span>提交</button>
+                <button type="button" class="layui-btn" lay-submit="" lay-filter="doSubmit" id="doSubmit"><span class="layui-icon layui-icon-add-1"></span>提交</button>
                 <button type="reset" class="layui-btn layui-btn-warm"><span class="layui-icon layui-icon-refresh-1"></span>重置</button>
             </div>
         </div>
@@ -164,6 +164,15 @@
                 ,{field:'target', title:'TARGET',align:'center',width:'100',hide:true}
                 ,{fixed: 'right', title:'操作', toolbar: '#menuRowBar',align:'center',width:'200'}
             ] ]
+            ,done:function (res,curr,count) {  //处理删除某一页最后一条数据的BUG
+                if(res.data.length==0&&curr!=1){
+                    tableIns.reload({
+                        page:{
+                            curr:(curr-1)
+                        }
+                    })
+                }
+            }
         });
 
         //模糊查询
@@ -211,6 +220,7 @@
                 title:'添加菜单',
                 success:function () {
                     $("#dataFrm")[0].reset();
+                    $("#pid").val("");
                     url="/menu/addMenu";
                     //初始化排序码(把后台查询的最后排序码传到前台)
                     $.get("/menu/loadMenuMaxOrderNum",function (res) {
@@ -241,7 +251,21 @@
         }
 
         //添加和修改的提交
-        $("#doSubmit").click(function () {
+        form.on("submit(doSubmit)",function (data) {
+            $.post(url,data.field,function (res) {
+                if(res.code==200){
+                    tableIns.reload();
+                    //刷新下拉树
+                    selectTree.reload();
+                    //刷新左边的菜单树
+                    window.parent.left.menuTree.reload();
+                }
+                layer.msg(res.msg);
+                layer.close(mainIndex);
+            })
+            return false;
+        })
+       /* $("#doSubmit").click(function () {
             var data = $("#dataFrm").serialize();
             $.post(url,data,function (res) {
                 if(res.code==200){
@@ -254,7 +278,7 @@
                 layer.msg(res.msg);
                 layer.close(mainIndex);
             })
-        });
+        });*/
 
         //删除
         function deleteMenu(data){
