@@ -6,9 +6,19 @@
     <delete id="deleteRolePermissionByRid">
         delete from sys_role_permission where rid=#{value}
     </delete>
+
     <!-- 根据角色ID删除sys_role_user  -->
     <delete id="deleteRoleUserByRid">
         delete from sys_role_user where rid=#{value}
     </delete>
 
+    <!--  根据角色ID查询当前角色拥有的所有的权限或菜单ID  -->
+    <select id="queryRolePermissionIdsByRid" resultType="java.lang.Integer">
+        select pid from sys_role_permission where rid=#{value}
+    </select>
+
+    <!--  保存角色和菜单权限之间的关系  -->
+    <insert id="ssaveRolePermission">
+        insert into sys_role_permission(rid,pid) values(#{rid},#{pid})
+    </insert>
 </mapper>

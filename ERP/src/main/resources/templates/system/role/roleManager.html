@@ -13,6 +13,8 @@
     <link rel="icon" href="/resources/favicon.ico">
     <link rel="stylesheet" href="/resources/layui/css/layui.css" media="all" />
     <link rel="stylesheet" href="/resources/css/public.css" media="all" />
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/dtree.css" media="all" />
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/font/dtreefont.css" media="all">
 </head>
 <body class="childrenBody">
 <!-- 查询条件开始 -->
@@ -102,14 +104,23 @@
 </div>
 <!-- 添加和修改的弹出层结束 -->
 
+<!-- 分配权限的弹出层开始 -->
+<div style="display: none;" id="selectRolePermissionDiv">
+    <ul id="permissionTree" class="dtree" data-id="0"></ul>
+</div>
+<!-- 分配权限的弹出层结束 -->
+
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 
 <script type="text/javascript">
-    layui.use(['jquery','form','table','layer'],function(){
+    layui.extend({
+        dtree: '/resources/layui_ext/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['jquery','form','table','layer','dtree'],function(){
         var $=layui.jquery;
         var form=layui.form;
         var table=layui.table;
         var layer=layui.layer;
+        var dtree=layui.dtree;
         //加载数据
         var tableIns=table.render({
             elem: '#roleTable'
@@ -219,8 +230,46 @@
                         tableIns.reload();
                     }
                     layer.msg(res.msg);
-                })
+                });
                 layer.close(index);
+            });
+        }
+
+        //打开分配角色的页面
+        function selectPermission(data) {
+            mainIndex=layer.open({
+                type:1,
+                content:$("#selectRolePermissionDiv"),
+                area:['400px','400px'],
+                title:'分配【'+data.name+'】的权限',
+                btn:['确认分配','关闭窗口'],
+                yes: function(index,layero){
+                    //得到树选中的所有节点
+                    var permissionData = dtree.getCheckbarNodesParam("permissionTree");
+                    var params = "rid="+data.id;
+                    $.each(permissionData,function (index,item) {
+                       params+="&ids="+item.nodeId;
+                    });
+                    $.post("/role/saveRolePermission",params,function (res) {
+                        layer.msg(res.msg);
+                    })
+                },
+                btn2: function(index,layero){
+
+                },
+                btnAlign: 'c',
+                success:function () {
+                    //根据角色ID请求权限和菜单tree的json数据
+                    dtree.render({
+                        elem: "#permissionTree",
+                        url: "/role/initPermissionByRoleId?roleId="+data.id,
+                        dataStyle: "layuiStyle",  //使用layui风格的数据格式
+                        dataFormat: "list",  //配置data的风格为list
+                        response:{message:"msg",statusCode:0},  //修改response中返回数据的定义
+                        checkbar: true,
+                        checkbarType: "all" // 默认就是all，其他的值为： no-all  p-casc   self  only
+                    });
+                }
             });
         }
     });
