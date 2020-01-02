@@ -94,9 +94,9 @@ public class MenuController {
         IPage<Permission> noticePage = new Page<>(permissionVo.getPage(),permissionVo.getLimit());
         QueryWrapper<Permission> wrapper = new QueryWrapper<>();
         //只查询菜单
+        wrapper.eq(permissionVo.getId()!=null,"id",permissionVo.getId()).or().eq(permissionVo.getId()!=null,"pid",permissionVo.getId());
         wrapper.eq("type",Constast.TYPE_MNEU);
         wrapper.like(StringUtils.isNotBlank(permissionVo.getTitle()),"title",permissionVo.getTitle());
-        wrapper.eq(permissionVo.getId()!=null,"id",permissionVo.getId()).or().eq(permissionVo.getId()!=null,"pid",permissionVo.getId());
         wrapper.orderByAsc("ordernum");
         this.permissionService.page(noticePage,wrapper);
         return new DataGridView(noticePage.getTotal(),noticePage.getRecords());

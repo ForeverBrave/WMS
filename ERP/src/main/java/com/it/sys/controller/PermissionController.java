@@ -69,7 +69,7 @@ public class PermissionController {
         wrapper.eq("type",Constast.TYPE_PERMISSION);
         wrapper.like(StringUtils.isNotBlank(permissionVo.getTitle()),"title",permissionVo.getTitle());
         wrapper.like(StringUtils.isNotBlank(permissionVo.getPercode()),"percode",permissionVo.getPercode());
-        wrapper.eq(permissionVo.getId()!=null,"id",permissionVo.getId()).or().eq(permissionVo.getId()!=null,"pid",permissionVo.getId());
+        wrapper.eq(permissionVo.getId()!=null,"pid",permissionVo.getId());
         wrapper.orderByAsc("ordernum");
         this.permissionService.page(noticePage,wrapper);
         return new DataGridView(noticePage.getTotal(),noticePage.getRecords());
