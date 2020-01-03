@@ -28,7 +28,7 @@ public class TreeNode {
     private List<TreeNode> children = new ArrayList<>();
 
     //0代表不选中   1代表选中
-    private String checkArr;
+    private String checkArr = "0";
 
     /**
      * 首页左边导航树的构造器
