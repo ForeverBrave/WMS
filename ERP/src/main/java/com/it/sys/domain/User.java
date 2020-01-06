@@ -65,17 +65,16 @@ public class User implements Serializable {
 
     private String salt;
 
-    /*
+    /**
      * 领导名称
      */
     @TableField(exist = false)
     private String leadername;
 
-    /*
+    /**
      * 部门名称
      */
     @TableField(exist = false)
     private String deptname;
-
 
 }

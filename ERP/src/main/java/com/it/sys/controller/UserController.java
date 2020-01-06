@@ -148,5 +148,27 @@ public class UserController {
         }
     }
 
+    /**
+     * 根据用户ID查询一个用户
+     */
+    @RequestMapping("loadUserById")
+    public DataGridView loadUserById(Integer id) {
+        return new DataGridView(this.userService.getById(id));
+    }
+
+    /**
+     * 修改用户
+     */
+    @RequestMapping("updateUser")
+    public ResultObj updateUser(UserVo userVo) {
+        try {
+            this.userService.updateById(userVo);
+            return ResultObj.UPDATE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.UPDATE_ERROR;
+        }
+    }
+
 }
 

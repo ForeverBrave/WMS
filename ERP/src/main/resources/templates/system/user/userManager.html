@@ -271,16 +271,40 @@
             mainIndex=layer.open({
                 type:1,
                 content:$("#addOrUpdateDiv"),
-                area:['600px','400px'],
-                title:'修改部门',
+                area:['700px','500px'],
+                title:'修改用户',
                 success:function () {
                     $("#dataFrm")[0].reset();
+                    $("#deptid").val("");
                     //装载新的数据
                     form.val("dataFrm",data);
-                    //选中之前父级部门 nodeId=data.pid
-                    dtree.dataInit("userTree",data.pid);
-                    // dtree.setSelectValue("userTree");
-                    dtree.selectVal("userTree");
+                    //选中之前所属部门 nodeId=data.deptid
+                    dtree.dataInit("deptTree",data.deptid);
+                    // dtree.setSelectValue("deptTree");
+                    dtree.selectVal("deptTree");
+
+                    //选中领导部门
+                    var leaderid = data.mgr;
+                    $.get("/user/loadUserById",{id:leaderid},function (res) {
+                       var d = res.data;
+                       dtree.dataInit("leaderdeptTree",d.deptid);
+                       dtree.selectVal("leaderdeptTree");
+
+                        //根据部门id查询当前部门下面的领导列表
+                        $.get("/user/loadUsersByDeptId",{deptid:d.deptid},function(res){
+                            var users=res.data;
+                            var dom_mgr=$("#mgr");
+                            var html="<option value='0'>请选择直属领导</option>";
+                            $.each(users,function(index,item){
+                                html+="<option value='"+item.id+"'>"+item.name+"</option>";
+                            });
+                            dom_mgr.html(html);
+                            //选中一个
+                            dom_mgr.val(leaderid);
+                            //重新渲染
+                            form.render("select");
+                        });
+                    });
                     url="/user/updateUser";
                 }
             });
@@ -294,9 +318,9 @@
                 }
                 layer.msg(res.msg);
                 layer.close(mainIndex);
-            })
+            });
             return false;
-        })
+        });
 
         //删除
         function deleteUser(data) {
