@@ -11,8 +11,10 @@ import com.it.sys.common.DataGridView;
 import com.it.sys.common.PinyinUtils;
 import com.it.sys.common.ResultObj;
 import com.it.sys.domain.Dept;
+import com.it.sys.domain.Role;
 import com.it.sys.domain.User;
 import com.it.sys.service.DeptService;
+import com.it.sys.service.RoleService;
 import com.it.sys.service.UserService;
 import com.it.sys.vo.UserVo;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +46,9 @@ public class UserController {
 
     @Autowired
     private DeptService deptService;
+
+    @Autowired
+    private RoleService roleService;
 
     @RequestMapping("loadAllUser")
     public DataGridView loadAllUser(UserVo userVo){
@@ -167,6 +172,85 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResultObj.UPDATE_ERROR;
+        }
+    }
+
+    /**
+     * 删除用户
+     */
+    @RequestMapping("deleteUser")
+    public ResultObj deleteUser(Integer id) {
+        try {
+            this.userService.removeById(id);
+            return ResultObj.DELETE_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DELETE_ERROR;
+        }
+    }
+
+    /**
+     * 重置用户密码
+     */
+    @RequestMapping("resetPwd")
+    public ResultObj resetPwd(Integer id) {
+        try {
+            User user = new User();
+            user.setId(id);
+            //加盐
+            String salt = IdUtil.simpleUUID().toUpperCase();
+            user.setSalt(salt);
+            //加盐加密并散列2次
+            user.setPwd(new Md5Hash(Constast.USER_DEFAULT_PWD,salt,2).toString());
+            this.userService.updateById(user);
+            return ResultObj.RESET_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.RESET_ERROR;
+        }
+    }
+
+    /**
+     * 根据用户id查询角色并选中已拥有的角色
+     * @param id
+     * @return
+     */
+    @RequestMapping("initRoleByUserId")
+    public DataGridView initRoleByUserId(Integer id){
+        //1、查询所有可用角色
+        QueryWrapper<Role> wapper = new QueryWrapper<>();
+        wapper.eq("available",Constast.AVAILABLE_TRUE);
+        List<Map<String, Object>> listMaps = this.roleService.listMaps(wapper);
+        //2、查询当前用户拥有的角色id集合
+        List<Integer> currentUserRoleIds = this.roleService.queryUserRoleIdsByUid(id);
+        for (Map<String, Object> map : listMaps) {
+            Boolean LAY_CHECKED = false;
+            Integer roleId = (Integer) map.get("id");
+            for (Integer rid : currentUserRoleIds) {
+                if(rid.equals(roleId)){
+                    LAY_CHECKED = true;
+                    break;
+                }
+            }
+            map.put("LAY_CHECKED",LAY_CHECKED);
+        }
+        return new DataGridView((long) listMaps.size(),listMaps);
+    }
+
+    /**
+     * 保存用户和角色之间的关系
+     * @param uid
+     * @param ids
+     * @return
+     */
+    @RequestMapping("saveUserRole")
+    public ResultObj saveUserRole(Integer uid,Integer[] ids){
+        try {
+            this.userService.saveUserRole(uid,ids);
+            return ResultObj.DISPATCH_SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultObj.DISPATCH_ERROR;
         }
     }
 

@@ -69,7 +69,6 @@
         <button type="button" lay-event="selectRole" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-edit"></span>分配角色</button>
     </div>
 </div>
-
 <!-- 数据表格结束 -->
 
 <!-- 添加和修改的弹出层开始 -->
@@ -159,6 +158,11 @@
 </div>
 <!-- 添加和修改的弹出层结束 -->
 
+<!-- 用户分配角色弹出层开始 -->
+<div style="display: none;" id="selectUserRoleDiv">
+    <table class="layui-hide" id="roleTable" lay-filter="roleTable"></table>
+</div>
+<!-- 用户分配角色弹出层结束 -->
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 
 <script type="text/javascript">
@@ -238,6 +242,12 @@
                     break;
                 case 'delete':
                     deleteUser(data);
+                    break;
+                case 'resetPwd':
+                    resetPwd(data);
+                    break;
+                case 'selectRole':
+                    selectRole(data);
                     break;
             };
         });
@@ -322,16 +332,12 @@
             return false;
         });
 
-        //删除
+        //删除用户
         function deleteUser(data) {
-            layer.confirm('你确定要删除【' + data.title + '】这个用户吗?', {icon: 3, title: '提示'}, function (index) {
+            layer.confirm('你确定要删除【' + data.name + '】这个用户吗?', {icon: 3, title: '提示'}, function (index) {
                 $.post("/user/deleteUser", {id: data.id}, function (res) {
                     if (res.code == 200) {
                         tableIns.reload();
-                        //刷新下拉树
-                        selectTree.reload();
-                        //刷新左边的部门树
-                        window.parent.left.userTree.reload();
                     }
                     layer.msg(res.msg);
                 })
@@ -339,6 +345,15 @@
             });
         }
 
+        //重置密码
+        function resetPwd(data) {
+            layer.confirm('你确定要重置【' + data.name + '】这个用户的密码吗?', {icon: 3, title: '提示'}, function (index) {
+                $.post("/user/resetPwd", {id: data.id}, function (res) {
+                    layer.msg(res.msg);
+                })
+                layer.close(index);
+            });
+        }
 
         //初始化查询条件下拉树
         var search_deptTree=dtree.renderSelect({
@@ -403,6 +418,54 @@
                 $("#loginname").val(res.value);
             })
         });
+
+        //打开分配角色的弹出层
+        function selectRole(data) {
+            mainIndex=layer.open({
+                type:1,
+                content:$("#selectUserRoleDiv"),
+                area:['800px','500px'],
+                title:'分配【'+data.name+'】的角色',
+                btn:['确认分配','关闭窗口'],
+                yes: function(index,layero){
+                    var checkStatus = table.checkStatus('roleTable'); //roleTable 即为基础参数 id 对应的值
+                    var params = "uid="+data.id;
+                    $.each(checkStatus.data,function (index,item) {
+                        params+="&ids="+item.id;
+                    });
+                    alert(params);
+                    $.post("/user/saveUserRole",params,function (res) {
+                        layer.msg(res.msg);
+                    })
+                },
+                btn2: function(index,layero){
+
+                },
+                btnAlign: 'c',
+                success:function () {
+                    initRoleTable(data);
+                }
+            });
+        }
+
+        var roleTableIns;
+        //初始化角色列表
+        function initRoleTable(data) {
+            //加载数据
+            roleTableIns=table.render({
+                elem: '#roleTable'
+                ,url:'/user/initRoleByUserId'
+                ,where:{
+                    id:data.id
+                }
+                ,cols: [ [
+                    {type:'checkbox',align:'center'}
+                    ,{field:'id', title:'ID',align:'center'}
+                    ,{field:'name', title:'角色名称',align:'center'}
+                    ,{field:'remark', title:'角色备注',align:'center'}
+                ] ]
+            });
+        }
     });
 
 </script>
