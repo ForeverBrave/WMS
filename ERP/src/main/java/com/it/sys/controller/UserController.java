@@ -253,6 +253,5 @@ public class UserController {
             return ResultObj.DISPATCH_ERROR;
         }
     }
-
 }
 
