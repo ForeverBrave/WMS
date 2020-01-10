@@ -433,7 +433,6 @@
                     $.each(checkStatus.data,function (index,item) {
                         params+="&ids="+item.id;
                     });
-                    alert(params);
                     $.post("/user/saveUserRole",params,function (res) {
                         layer.msg(res.msg);
                     })

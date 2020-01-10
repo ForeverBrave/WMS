@@ -8,6 +8,8 @@ import com.it.sys.domain.Dept;
 import com.it.sys.domain.Permission;
 import com.it.sys.domain.User;
 import com.it.sys.service.PermissionService;
+import com.it.sys.service.RoleService;
+import com.it.sys.service.UserService;
 import com.it.sys.vo.DeptVo;
 import com.it.sys.vo.PermissionVo;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,9 @@ public class MenuController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private RoleService roleService;
+
     @RequestMapping("loadIndexLeftMenuJson")
     public DataGridView loadIndexLeftMenuJson(PermissionVo permissionVo){
         //查询所有菜单
@@ -41,13 +46,28 @@ public class MenuController {
 
         User user = (User) WebUtils.getSession().getAttribute("user");
         List<Permission> list = null;
-
         if(user.getType()==Constast.USER_TYPE_SUPER){
             //超级管理员
             list = permissionService.list(queryWrapper);
         }else {
             //普通用户(根据用户ID+角色+权限去查询)
-            list = permissionService.list(queryWrapper);
+            Integer userId = user.getId();
+            //根据用户id查询角色
+            List<Integer> currentUserRoleIds = roleService.queryUserRoleIdsByUid(userId);
+            //根据角色id取到权限和菜单id(pid不能重复)
+            Set<Integer> pids = new HashSet<>();
+            for (Integer rid : currentUserRoleIds) {
+                List<Integer> permissionIds = roleService.queryRolePermissionIdsByRid(rid);
+                pids.addAll(permissionIds);
+            }
+
+            //根据角色id查询权限
+            if (pids.size()>0){
+                queryWrapper.in("id",pids);
+                list = permissionService.list(queryWrapper);
+            }else {
+                list = new ArrayList<>();
+            }
         }
 
         List<TreeNode> treeNodes = new ArrayList<>();
