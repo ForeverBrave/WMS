@@ -1,12 +1,16 @@
 package com.it.bus.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.it.bus.domain.Goods;
+import com.it.bus.domain.Provider;
 import com.it.bus.service.GoodsService;
+import com.it.bus.service.ProviderService;
 import com.it.bus.vo.GoodsVo;
+import com.it.sys.common.Constast;
 import com.it.sys.common.DataGridView;
 import com.it.sys.common.ResultObj;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>
@@ -34,6 +39,9 @@ public class GoodsController {
     @Autowired
     private GoodsService goodsService;
 
+    @Autowired
+    private ProviderService providerService;
+
     /**
      * 查询
      * @return
@@ -42,14 +50,21 @@ public class GoodsController {
     public DataGridView loadAllGoods(GoodsVo goodsVo){
         IPage<Goods> goodsPage = new Page<>(goodsVo.getPage(),goodsVo.getLimit());
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
-        wrapper.eq(goodsVo.getProviderid()!=0&&goodsVo.getProviderid()!=null,"providerid",goodsVo.getProviderid());
+        wrapper.eq(goodsVo.getProviderid()!=null&&goodsVo.getProviderid()!=0,"providerid",goodsVo.getProviderid());
         wrapper.like(StringUtils.isNotBlank(goodsVo.getGoodsname()),"goodsname",goodsVo.getGoodsname());
         wrapper.like(StringUtils.isNotBlank(goodsVo.getProductcode()),"productcode",goodsVo.getProductcode());
         wrapper.like(StringUtils.isNotBlank(goodsVo.getPromitcode()),"promitcode",goodsVo.getPromitcode());
         wrapper.like(StringUtils.isNotBlank(goodsVo.getDescription()),"description",goodsVo.getDescription());
         wrapper.like(StringUtils.isNotBlank(goodsVo.getSize()),"size",goodsVo.getSize());
         this.goodsService.page(goodsPage,wrapper);
-        return new DataGridView(goodsPage.getTotal(),goodsPage.getRecords());
+        List<Goods> records = goodsPage.getRecords();
+        for (Goods goods : records) {
+            Provider provider = this.providerService.getById(goods.getProviderid());
+            if(null!=provider){
+                goods.setProvidername(provider.getProvidername());
+            }
+        }
+        return new DataGridView(goodsPage.getTotal(),records);
     }
 
     /**

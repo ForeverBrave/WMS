@@ -39,13 +39,27 @@
             <div class="layui-inline">
                 <label class="layui-form-label">生产批号</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="phone" autocomplete="off" class="layui-input">
+                    <input type="text" name="productcode" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">批准文号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="promitcode" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">联系人</label>
+                <label class="layui-form-label">商品描述</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="connectionperson" autocomplete="off" class="layui-input">
+                    <input type="text" name="description" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品规格</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="size" autocomplete="off" class="layui-input">
                 </div>
             </div>
         </div>
@@ -70,7 +84,6 @@
     <table class="layui-hide" id="goodsTable" lay-filter="goodsTable"></table>
     <div id="goodsToolBar" style="display: none;">
         <button type="button" lay-event="add" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-add-1"></span>添加商品</button>
-        <button type="button" lay-event="batchDelete" class="layui-btn layui-btn-sm layui-btn-danger"><span class="layui-icon layui-icon-delete"></span>批量删除</button>
     </div>
 
     <div id="goodsRowBar" style="display: none;">
@@ -193,22 +206,23 @@
             ,url:'/goods/loadAllGoods'
             ,toolbar: '#goodsToolBar' //开启头部工具栏，并为其绑定左侧模板
             ,title: '商品数据表'
-            ,height:'full-220'
+            ,height:'full-280'
             ,page: true
             ,cols: [ [
-                {type:'checkbox',align:'center'}
-                ,{field:'id', title:'ID',align:'center' ,width:'80'}
-                ,{field:'goodsname', title:'商品名称',align:'center',width:'120'}
-                ,{field:'zip', title:'邮编',align:'center',width:'120'}
-                ,{field:'address', title:'商品地址',align:'center',width:'150'}
-                ,{field:'telephone', title:'商品电话',align:'center',width:'150'}
-                ,{field:'connectionperson', title:'联系人',align:'center',width:'120'}
-                ,{field:'phone', title:'联系人电话',align:'center',width:'150'}
-                ,{field:'bank', title:'开户行',align:'center',width:'120'}
-                ,{field:'account', title:'账号',align:'center',width:'180'}
-                ,{field:'email', title:'邮箱',align:'center',width:'150'}
-                ,{field:'fax', title:'传真',align:'center',width:'120'}
-                ,{field:'available', title:'是否可用',align:'center',width:'120',templet:function(d){
+                {field:'id', title:'ID',align:'center' ,width:'80'}
+                ,{field:'goodsname', title:'商品名称',align:'center',width:'150'}
+                ,{field:'providername', title:'供应商',align:'center',width:'120'}
+                ,{field:'produceplace', title:'产地',align:'center',width:'120'}
+                ,{field:'size', title:'商品规格',align:'center',width:'120'}
+                ,{field:'goodspackage', title:'商品包装',align:'center',width:'120'}
+                ,{field:'productcode', title:'生产批号',align:'center',width:'100'}
+                ,{field:'promitcode', title:'批准文号',align:'center',width:'100'}
+                ,{field:'description', title:'商品描述',align:'center',width:'120'}
+                ,{field:'price', title:'商品价格',align:'center',width:'100'}
+                ,{field:'number', title:'库存量',align:'center',width:'100'}
+                ,{field:'dangernum', title:'预警库存',align:'center',width:'100'}
+                ,{field:'goodsimg', title:'商品图片',align:'center',width:'100'}
+                ,{field:'available', title:'是否可用',align:'center',width:'100',templet:function(d){
                         return d.available==1?'<font color=blue>可用</font>':'<font color=red>不可用</font>';
                     }}
                 ,{fixed: 'right', title:'操作', toolbar: '#goodsRowBar',align:'center',width:'200'}
@@ -222,6 +236,18 @@
                     })
                 }
             }
+        });
+
+        //加载查询条件供应商的下拉列表
+        $.get("/provider/loadAllProviderForSelect",function (res) {
+            var data = res.data;
+            var dom = $("#search_providerid");
+            var html = '<option value="0">请选择供应商</option>';
+            $.each(data,function (index,item) {
+                html+='<option value="'+item.id+'">'+item.providername+'</option>'
+            });
+            dom.html(html);
+            form.render("select");
         });
 
         //模糊查询
