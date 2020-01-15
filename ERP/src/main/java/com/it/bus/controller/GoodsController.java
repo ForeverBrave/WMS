@@ -10,6 +10,7 @@ import com.it.bus.domain.Provider;
 import com.it.bus.service.GoodsService;
 import com.it.bus.service.ProviderService;
 import com.it.bus.vo.GoodsVo;
+import com.it.sys.common.AppFileUtils;
 import com.it.sys.common.Constast;
 import com.it.sys.common.DataGridView;
 import com.it.sys.common.ResultObj;
@@ -75,6 +76,10 @@ public class GoodsController {
     @RequestMapping("addGoods")
     public ResultObj addGoods(GoodsVo goodsVo){
         try {
+            if (goodsVo.getGoodsimg()!=null&&goodsVo.getGoodsimg().endsWith("_temp")){
+                String newName = AppFileUtils.renameFile(goodsVo.getGoodsimg());
+                goodsVo.setGoodsimg(newName);
+            }
             this.goodsService.save(goodsVo);
             return ResultObj.ADD_SUCCESS;
         } catch (Exception e) {
@@ -91,6 +96,17 @@ public class GoodsController {
     @RequestMapping("updateGoods")
     public ResultObj updateGoods(GoodsVo goodsVo){
         try {
+            //说明不是默认图片
+            if(!(goodsVo.getGoodsimg()!=null&& Constast.IMAGES_DEFAULTHOODSIMG_PNG.equals(goodsVo.getGoodsimg()))){
+                if (goodsVo.getGoodsimg().endsWith("_temp")){
+                    String newName = AppFileUtils.renameFile(goodsVo.getGoodsimg());
+                    goodsVo.setGoodsimg(newName);
+                    //删除原先图片
+                    String oldPath = this.goodsService.getById(goodsVo.getId()).getGoodsimg();
+                    //若原先图片不是默认地址则不是默认图片
+                    AppFileUtils.removeFileByPath(oldPath);
+                }
+            }
             this.goodsService.updateById(goodsVo);
             return ResultObj.UPDATE_SUCCESS;
         } catch (Exception e) {
@@ -100,12 +116,14 @@ public class GoodsController {
     }
 
     /**
-     * 按id删除
+     * 删除
      * @return
      */
     @RequestMapping("deleteGoods")
-    public ResultObj deleteGoods(Integer id){
+    public ResultObj deleteGoods(Integer id,String goodsimg){
         try {
+            //删除源文件
+            AppFileUtils.removeFileByPath(goodsimg);
             this.goodsService.removeById(id);
             return ResultObj.DELETE_SUCCESS;
         } catch (Exception e) {
