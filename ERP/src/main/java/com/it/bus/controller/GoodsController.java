@@ -103,7 +103,6 @@ public class GoodsController {
                     goodsVo.setGoodsimg(newName);
                     //删除原先图片
                     String oldPath = this.goodsService.getById(goodsVo.getId()).getGoodsimg();
-                    //若原先图片不是默认地址则不是默认图片
                     AppFileUtils.removeFileByPath(oldPath);
                 }
             }
@@ -131,6 +130,44 @@ public class GoodsController {
             return ResultObj.DELETE_ERROR;
         }
     }
+
+    /**
+     * 加载所有可用的供货商
+     * @return
+     */
+    @RequestMapping("loadAllGoodsForSelect")
+    public DataGridView loadAllGoodsForSelect(){
+        QueryWrapper<Goods> wrapper = new QueryWrapper<>();
+        wrapper.eq("available", Constast.AVAILABLE_TRUE);
+        List<Goods> list = this.goodsService.list(wrapper);
+        for (Goods goods : list) {
+            Provider provider = this.providerService.getById(goods.getProviderid());
+            if(null!=provider){
+                goods.setProvidername(provider.getProvidername());
+            }
+        }
+        return new DataGridView(list);
+    }
+
+    /**
+     * 根据供应商id查询商品信息
+     * @return
+     */
+    @RequestMapping("loadGoodsByProviderId")
+    public DataGridView loadGoodsByProviderId(Integer providerid){
+        QueryWrapper<Goods> wrapper = new QueryWrapper<>();
+        wrapper.eq("available", Constast.AVAILABLE_TRUE);
+        wrapper.eq(providerid!=null,"providerid",providerid);
+        List<Goods> list = this.goodsService.list(wrapper);
+        for (Goods goods : list) {
+            Provider provider = this.providerService.getById(goods.getProviderid());
+            if(null!=provider){
+                goods.setProvidername(provider.getProvidername());
+            }
+        }
+        return new DataGridView(list);
+    }
+
 
 }
 

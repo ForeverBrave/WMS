@@ -36,4 +36,12 @@ public class BusinessController {
     public String toGoodsManager(){
         return "business/goods/goodsManager";
     }
+
+    /**
+     * 跳转到进货管理
+     */
+    @RequestMapping("toInportManager")
+    public String toInportManager(){
+        return "business/inport/inportManager";
+    }
 }
