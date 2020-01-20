@@ -1,5 +1,6 @@
 package com.it.bus.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -45,6 +46,15 @@ public class Outport implements Serializable {
     private String remark;
 
     private Integer goodsid;
+
+    @TableField(exist = false)
+    private String providername;
+
+    @TableField(exist = false)
+    private String goodsname;
+
+    @TableField(exist = false)
+    private String size;
 
 
 }

@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface OutportService extends IService<Outport> {
 
+    /**
+     * 退货
+     * @param id
+     * @param number
+     * @param remark
+     */
+    void addOutport(Integer id, Integer number, String remark);
 }

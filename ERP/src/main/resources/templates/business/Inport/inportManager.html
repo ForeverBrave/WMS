@@ -182,7 +182,6 @@
 </div>
 <!-- 退货的弹出层  结束 -->
 
-
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 <script type="text/javascript">
     var tableIns;
@@ -363,7 +362,7 @@
                 type:1,
                 content:$("#addOrUpdateDiv"),
                 area:['800px','600px'],
-                title:'修改进货',
+                title:'修改商品进货',
                 success:function () {
                     $("#dataFrm")[0].reset();
                     //装载新的数据
@@ -371,7 +370,8 @@
                     initProviderSelect(data.providerid);
                     initGoodsSelect(data.providerid,data.goodsid);
                     url="/inport/updateInport";
-                    //
+                    //禁用供应商和商品的下拉框
+                    $(".mydiv").show();
                 }
             });
         }
@@ -400,6 +400,44 @@
                 layer.close(index);
             });
         }
+
+        //打开退货弹出层
+        function back(data) {
+            mainIndex=layer.open({
+                type:1,
+                content:$("#backGoodsDiv"),
+                area:['800px','500px'],
+                title:'商品退货',
+                success:function () {
+                    $("#dataBackFrm")[0].reset();
+                    //装载新的数据
+                    form.val("dataBackFrm",{id:data.id,currentnumber:data.number});
+                }
+            });
+        }
+
+        //自定义验证规则
+        form.verify({
+           checknumber: function (value) {
+               var currentnumber=parseInt($("#currentnumber").val());
+               if(parseInt(value)>currentnumber||parseInt(value)<1){
+                   return '退货数量只能在【1】———【'+currentnumber+"】数量之间";
+               }
+           }
+        });
+
+        //退货提交
+        form.on("submit(doBackSubmit)",function (data) {
+           $.post("/outport/addOutport",data.field,function (res) {
+              if(res.code==200){
+                  tableIns.reload();
+              }
+              layer.msg(res.msg);
+              layer.close(mainIndex);
+           });
+            return false;
+        });
+
     });
 </script>
 

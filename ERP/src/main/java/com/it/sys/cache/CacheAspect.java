@@ -12,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,7 +30,11 @@ public class CacheAspect {
     private Log log = LogFactory.getLog(CacheAspect.class);
 
     // 声明一个缓存容器
-    private Map<String, Object> CACHE_CONTAINER = new HashMap<>();
+    private static Map<String, Object> CACHE_CONTAINER = CachePool.CACHE_CONTAINER;
+
+    public static Map<String, Object> getCACHE_CONTAINER() {
+        return CACHE_CONTAINER;
+    }
 
     // 声明切面表达式
     private static final String POINTCUT_DEPT_ADD = "execution(* com.it.sys.service.impl.DeptServiceImpl.save(..))";

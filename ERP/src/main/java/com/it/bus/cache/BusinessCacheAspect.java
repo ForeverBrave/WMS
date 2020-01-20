@@ -4,6 +4,7 @@ import com.it.bus.domain.Customer;
 
 import com.it.bus.domain.Goods;
 import com.it.bus.domain.Provider;
+import com.it.sys.cache.CachePool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,7 +35,7 @@ public class BusinessCacheAspect {
     private Log log = LogFactory.getLog(BusinessCacheAspect.class);
 
     // 声明一个缓存容器
-    private Map<String, Object> CACHE_CONTAINER = new HashMap<>();
+    private static Map<String, Object> CACHE_CONTAINER = CachePool.CACHE_CONTAINER;
 
     // 声明切面表达式
     private static final String POINTCUT_CUSTOMER_ADD = "execution(* com.it.bus.service.impl.CustomerServiceImpl.save(..))";
