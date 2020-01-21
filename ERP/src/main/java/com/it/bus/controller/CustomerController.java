@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.it.bus.domain.Customer;
+import com.it.bus.domain.Provider;
 import com.it.bus.service.CustomerService;
 import com.it.bus.vo.CustomerVo;
+import com.it.sys.common.Constast;
 import com.it.sys.common.DataGridView;
 import com.it.sys.common.ResultObj;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -48,6 +51,20 @@ public class CustomerController {
         wrapper.like(StringUtils.isNotBlank(customerVo.getConnectionperson()),"connectionperson",customerVo.getConnectionperson());
         this.customerService.page(customerPage,wrapper);
         return new DataGridView(customerPage.getTotal(),customerPage.getRecords());
+    }
+
+    /**
+     * 加载所有顾客
+     * @return
+     */
+    @RequestMapping("loadAllCustomerForSelect")
+    public DataGridView loadAllCustomerForSelect(){
+        QueryWrapper<Customer> wrapper = new QueryWrapper<>();
+        List<Customer> list = this.customerService.list();
+        for (Customer customer : list) {
+            System.out.println(customer);
+        }
+        return new DataGridView(list);
     }
 
     /**

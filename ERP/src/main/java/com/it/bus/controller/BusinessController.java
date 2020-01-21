@@ -52,4 +52,12 @@ public class BusinessController {
     public String toOutportManager(){
         return "business/outport/outportManager";
     }
+
+    /**
+     * 跳转到销售管理
+     */
+    @RequestMapping("toSalesManager")
+    public String toSalesManager(){
+        return "business/sales/salesManager";
+    }
 }

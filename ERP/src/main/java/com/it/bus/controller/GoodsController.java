@@ -132,7 +132,7 @@ public class GoodsController {
     }
 
     /**
-     * 加载所有可用的供货商
+     * 加载所有可用的商品
      * @return
      */
     @RequestMapping("loadAllGoodsForSelect")
