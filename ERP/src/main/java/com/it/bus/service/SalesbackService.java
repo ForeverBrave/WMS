@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SalesbackService extends IService<Salesback> {
 
+    void addSalesback(Integer id, Integer number, String remark);
 }

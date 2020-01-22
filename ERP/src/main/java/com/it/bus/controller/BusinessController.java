@@ -60,4 +60,12 @@ public class BusinessController {
     public String toSalesManager(){
         return "business/sales/salesManager";
     }
+
+    /**
+     * 跳转到销售退货管理
+     */
+    @RequestMapping("toSalesbackManager")
+    public String toSalesbackManager(){
+        return "business/salesback/salesbackManager";
+    }
 }

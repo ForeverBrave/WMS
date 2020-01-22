@@ -44,7 +44,9 @@ public class Sales implements Serializable {
 
     private String remark;
 
-    private BigDecimal saleprice;
+    private Double saleprice;
+
+    //private BigDecimal saleprice;
 
     private Integer goodsid;
 

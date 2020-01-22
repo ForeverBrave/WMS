@@ -306,17 +306,17 @@
                 success:function () {
                     $("#dataFrm")[0].reset();
                     url="/sales/addSales";
-                    initcustomerSelect();
+                    initCustomerSelect();
                     $(".mydiv").hide();
                 }
             });
         }
 
         //初始化添加和修改页面的下拉列表
-        function initcustomerSelect(customerid) {
+        function initCustomerSelect(customerid) {
             var dom = $("#goodsid");
             dom.html("");
-            $.get("/customer/loadAllcustomerForSelect",function (res) {
+            $.get("/customer/loadAllCustomerForSelect",function (res) {
                 var data = res.data;
                 var dom = $("#customerid");
                 var html = '<option value="0">请选择客户</option>';
@@ -338,24 +338,6 @@
             initGoodsSelect(customerid);
         });
 
-        //加载商品下拉列表
-        function initGoodsSelect(customerid,goodsid) {
-            $.get("/goods/loadGoodsBycustomerId",{customerid:customerid},function (res) {
-                var data = res.data;
-                var dom = $("#goodsid");
-                var html = '<option value="0">请选择商品</option>';
-                $.each(data,function (index,item) {
-                    html+='<option value="'+item.id+'">'+item.goodsname+'-'+item.size+'['+item.customername+']</option>'
-                });
-                dom.html(html);
-                //如果goodsid有值就反选
-                if (goodsid!=undefined){
-                    dom.val(goodsid);
-                }
-                form.render("select");
-            })
-        }
-
         //打开修改的弹出层
         function openUpdateSalesLayer(data){
             mainIndex=layer.open({
@@ -367,13 +349,31 @@
                     $("#dataFrm")[0].reset();
                     //装载新的数据
                     form.val("dataFrm",data);
-                    initcustomerSelect(data.customerid);
+                    initCustomerSelect(data.customerid);
                     initGoodsSelect(data.customerid,data.goodsid);
                     url="/sales/updateSales";
                     //禁用客户和商品的下拉框
                     $(".mydiv").show();
                 }
             });
+        }
+
+        //加载商品下拉列表
+        function initGoodsSelect(goodsid) {
+            $.get("/goods/loadAllGoodsForSelect",function (res) {
+                var data = res.data;
+                var dom = $("#goodsid");
+                var html = '<option value="0">请选择商品</option>';
+                $.each(data,function (index,item) {
+                    html+='<option value="'+item.id+'">'+item.goodsname+'-'+item.size+'['+item.providername+']</option>'
+                });
+                dom.html(html);
+                //如果goodsid有值就反选
+                if (goodsid!=undefined){
+                    dom.val(goodsid);
+                }
+                form.render("select");
+            })
         }
 
         //添加和修改的提交
@@ -428,7 +428,7 @@
 
         //退货提交
         form.on("submit(doBackSubmit)",function (data) {
-           $.post("/outport/addOutport",data.field,function (res) {
+           $.post("/salesback/addSalesback",data.field,function (res) {
               if(res.code==200){
                   tableIns.reload();
               }
