@@ -36,7 +36,7 @@ public class SystemController {
      */
     @RequestMapping("toDeskManager")
     public String toDeskManager(){
-        return "system/index/deskManager";
+        return "system/index/deskManager2";
     }
 
     /**
