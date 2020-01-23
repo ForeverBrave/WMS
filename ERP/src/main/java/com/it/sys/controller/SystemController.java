@@ -164,4 +164,13 @@ public class SystemController {
     public String toCacheManager(){
         return "system/cache/cacheManager";
     }
+
+    /**
+     * 跳转到密码管理
+     * @return
+     */
+    @RequestMapping("toPasswordManager")
+    public String toPasswordManager(){
+        return "system/password/passwordManager";
+    }
 }

@@ -36,6 +36,9 @@ public class ResultObj {
     public static final ResultObj OPERATE_SUCCESS = new ResultObj(Constast.OK,"操作成功！");
     public static final ResultObj OPERATE_ERROR = new ResultObj(Constast.ERROR,"操作失败！");
 
+    public static final ResultObj CHANGE_SUCCESS = new ResultObj(Constast.OK,"修改成功！");
+    public static final ResultObj CHANGE_ERROR = new ResultObj(Constast.ERROR,"修改失败！");
+
     private Integer code;
     private String msg;
 }

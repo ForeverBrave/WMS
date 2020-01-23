@@ -19,4 +19,5 @@ public interface UserService extends IService<User> {
      * @param ids
      */
     void saveUserRole(Integer uid, Integer[] ids);
+
 }
