@@ -31,6 +31,14 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  redis:
+    host: 192.168.160.128
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 20
+        max-active: 100
+        min-idle: 10
 #配置mybatisplus
 mybatis-plus:
   mapper-locations:
@@ -41,7 +49,6 @@ mybatis-plus:
     banner: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
 #shiro的配置
 shiro:
   hash-algorithm-name: md5
